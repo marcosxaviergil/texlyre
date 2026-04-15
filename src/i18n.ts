@@ -3,6 +3,7 @@ import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
 import enTranslations from '../translations/locales/en.json';
+import ptBRTranslations from '../translations/locales/pt-BR.json';
 import deTranslations from '../translations/locales/de.json';
 import arTranslations from '../translations/locales/ar.json';
 import zhCNTranslations from '../translations/locales/zh-CN.json';
@@ -13,6 +14,9 @@ i18next
         resources: {
             en: {
                 translation: enTranslations,
+            },
+            'pt-BR': {
+                translation: ptBRTranslations,
             },
             de: {
                 translation: deTranslations,
