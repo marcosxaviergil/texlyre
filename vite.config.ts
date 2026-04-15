@@ -7,7 +7,7 @@ import wasm from "vite-plugin-wasm";
 
 const useHttps = process.env.VITE_USE_HTTPS === "true";
 
-const basePath = "/texlyre/";
+const basePath = "/";
 
 // @ts-ignore
 export default defineConfig({
