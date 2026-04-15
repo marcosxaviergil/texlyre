@@ -1,0 +1,64 @@
+name: Build & Push
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  build:
+    runs-on: docker
+    container:
+      image: forgejo.pi.xvr/marcosxavier/imagem-docker:stable
+      volumes:
+        - /root/.docker:/root/.docker
+
+    steps:
+      - name: Banner
+        run: |
+          echo '================================================================='
+          echo '  __  __    ___     _____ _____ ____  '
+          echo '  \ \/ /   / \ \   / /_ _| ____|  _ \ '
+          echo '   \  /   / _ \ \ / / | ||  _| | |_) |'
+          echo '   /  \  / ___ \ V /  | || |___|  _ < '
+          echo '  /_/\_\/_/   \_\_/  |___|_____|_| \_\'
+          echo '  TeXlyre — LaTeX/Typst editor local-first'
+          echo '  Homelab  : Cluster com Orange Pi Zero 3'
+          echo '  Tailnet  : *.pi.xvr'
+          echo '  Registro : forgejo.pi.xvr'
+          echo '  Responsavel  : Marcos Xavier Gil Junior'
+          echo '================================================================='
+
+      - name: Checkout
+        uses: https://data.forgejo.org/actions/checkout@v4
+
+      - name: Build & Push
+        env:
+          REGISTRY: forgejo.pi.xvr
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          OWNER=$(echo "$OWNER" | tr '[:upper:]' '[:lower:]')
+          REPO=$(echo "$REPO"   | tr '[:upper:]' '[:lower:]')
+          BRANCH=$(echo "$BRANCH" | sed 's/[^a-zA-Z0-9._-]/-/g' | tr '[:upper:]' '[:lower:]')
+          IMAGE="${REGISTRY}/${OWNER}/${REPO}:${BRANCH}"
+          echo "${{ secrets.REGISTRY_TOKEN }}" | docker login "$REGISTRY" \
+            -u "${{ github.actor }}" --password-stdin
+          docker build --pull -t "$IMAGE" .
+          docker push "$IMAGE"
+
+      - name: Deploy via Portainer
+        run: |
+          curl -fSs --max-time 30 \
+            -X POST "https://portaria.pi.xvr/api/webhooks/${{ vars.PORTAINER_WEBHOOK_ID }}"
+
+      - name: Prune & Banner
+        if: always()
+        run: |
+          docker system prune -af
+          echo '================================================================='
+          echo '  Homelab  : Cluster com Orange Pi Zero 3'
+          echo '  Registro : forgejo.pi.xvr'
+          echo '================================================================='
