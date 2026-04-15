@@ -5,7 +5,7 @@ const config: TexlyreConfig = {
     title: 'TeXlyre',
     tagline: 'A local-first LaTeX & Typst collaborative web editor',
     url: 'https://texlyre.github.io',
-    baseUrl: '/',
+    baseUrl: '/texlyre/',
     organizationName: 'texlyre',
     projectName: 'texlyre',
 
