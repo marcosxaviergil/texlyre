@@ -1,0 +1,83 @@
+image: registry.setic.ufsc.br/marcosxavier/docker-image/docker:stable
+
+stages:
+  - build
+  - deploy
+  - cleanup
+
+variables:
+  DOCKER_BUILDKIT: "1"
+  REGISTRY_IMAGE: "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+
+# ── Âncoras ────────────────────────────────────────────────────────────────
+.docker_job: &docker_job
+  image: registry.setic.ufsc.br/marcosxavier/docker-image/docker:stable
+  before_script:
+    - docker info
+
+.banner: &banner |
+  echo "================================================================="
+  echo "   _____ ______ _______ _____  _____ "
+  echo "  / ____|  ____|__   __|_   _|/ ____|"
+  echo " | (___ | |__     | |    | | | |     "
+  echo "  \___ \|  __|    | |    | | | |     "
+  echo "  ____) | |____   | |   _| |_| |____ "
+  echo " |_____/|______|  |_|  |_____|\_____|"
+  echo "  Superintendencia de Tecnologia da Informacao e Comunicacao    "
+  echo "  Universidade Federal de Santa Catarina                        "
+  echo "  Portal       : https://latex.ufsc.br                          "
+  echo "  Responsavel  : Marcos Xavier Gil Junior                       "
+  echo "================================================================="
+
+# ── 1. Build & Push ────────────────────────────────────────────────────────
+build-image:
+  <<: *docker_job
+  stage: build
+  only:
+    - branches
+  script:
+    - *banner
+    - |
+      echo "→ Image : ${REGISTRY_IMAGE}"
+      echo "→ Ref   : ${CI_COMMIT_SHORT_SHA}"
+      echo "→ Date  : ${CI_PIPELINE_CREATED_AT}"
+    - docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
+    - docker build --pull -t "${REGISTRY_IMAGE}" .
+    - docker push "${REGISTRY_IMAGE}"
+  tags:
+    - docker
+
+# ── 2. Deploy (Portainer webhook) ──────────────────────────────────────────
+deploy-portainer:
+  stage: deploy
+  only:
+    - branches
+  needs:
+    - build-image
+  variables:
+    GIT_CHECKOUT: "false"
+  script:
+    - *banner
+    - |
+      if [ -n "${WEBHOOK_PORTAINER}" ]; then
+        for url in $(echo "${WEBHOOK_PORTAINER}" | tr ',' ' '); do
+          wget --post-data '' -O - "$url"
+        done
+      else
+        echo "Variável \$WEBHOOK_PORTAINER não definida." ; exit 1
+      fi
+  tags:
+    - docker
+
+# ── 3. Cleanup ─────────────────────────────────────────────────────────────
+cleanup:
+  <<: *docker_job
+  stage: cleanup
+  only:
+    - branches
+  when: always
+  script:
+    - *banner
+    - docker system prune -af
+  tags:
+    - docker
