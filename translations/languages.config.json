@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "lastUpdated": "2026-04-08T15:21:33.249Z",
+    "lastUpdated": "2026-04-15T00:00:00.000Z",
     "totalKeys": 1927
   },
   "languages": [
@@ -13,6 +13,16 @@
       "totalKeys": 1927,
       "translatedKeys": 0,
       "filePath": "locales/en.json"
+    },
+    {
+      "code": "pt-BR",
+      "name": "Portuguese (Brazil)",
+      "nativeName": "Português (Brasil)",
+      "direction": "ltr",
+      "coverage": 100,
+      "totalKeys": 1927,
+      "translatedKeys": 1927,
+      "filePath": "locales/pt-BR.json"
     },
     {
       "code": "ar",
