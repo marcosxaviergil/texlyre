@@ -7,7 +7,7 @@ WORKDIR /app
 
 # Instala dependências primeiro
 COPY package.json package-lock.json ./
-RUN npm ci --prefer-offline
+RUN npm ci
 
 # Copia o restante do código-fonte
 COPY . .
