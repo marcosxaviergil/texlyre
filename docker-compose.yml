@@ -1,0 +1,29 @@
+services:
+  texlyre:
+    image: forgejo.pi.xvr/marcosxavier/texlyre:main
+    networks:
+      - pi
+    dns:
+      - 100.64.0.19
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.docker.network: "pi"
+
+        traefik.http.services.texlyre.loadbalancer.server.port: "80"
+
+        traefik.http.routers.texlyre.rule: "Host(`texlyre.pi.xvr`)"
+        traefik.http.routers.texlyre.entrypoints: "websecure"
+        traefik.http.routers.texlyre.tls: "true"
+        traefik.http.routers.texlyre.tls.certresolver: "step-ca"
+        traefik.http.routers.texlyre.tls.domains[0].main: "texlyre.pi.xvr"
+        traefik.http.routers.texlyre.service: "texlyre"
+
+        traefik.http.routers.texlyre.middlewares: "voidauth@file"
+
+        kuma.__texlyre: '"texlyre"'
+
+networks:
+  pi:
+    external: true
+    name: pi
