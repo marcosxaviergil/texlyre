@@ -30,6 +30,7 @@
     "image-viewer-enable-filters": true,
     "image-viewer-enable-panning": true,
     "image-viewer-quality": "high",
+    "language": "pt-BR",
     "latex-engine": "pdftex",
     "latex-store-cache": true,
     "latex-store-working-directory": false,

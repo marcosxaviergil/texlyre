@@ -31,7 +31,7 @@ i18next
                 translation: zhCNTranslations,
             }
         },
-        lng: 'en',
+        lng: 'pt-BR',
         fallbackLng: 'en',
         interpolation: {
             escapeValue: false,
